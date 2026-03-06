@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jirone - ADTU Canteen</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+<body>
+
+    <div id="success-anim" class="success-overlay hidden">
+        <div class="checkmark-circle">
+            <i class="fa-solid fa-check checkmark"></i>
+        </div>
+        <div class="success-text">Order Placed!</div>
+        <div class="success-sub">Kitchen has received your order</div>
+    </div>
+
+    <div id="login-view" class="view hidden">
+        <div class="login-container">
+            <div class="login-left">
+                <h1>Jirone</h1>
+                <p>The Smartest Way to Dine at Assam Down Town University.</p>
+            </div>
+            <div class="login-right">
+                <div class="login-box">
+                    <div class="login-logo"><i class="fa-solid fa-utensils"></i></div>
+    
+                    <h2 class="login-title" id="auth-title">Welcome Back</h2>
+                    <p class="login-subtitle" id="auth-sub">Enter your details to access canteen</p>
+
+                    <div class="auth-inputs">
+                        <input type="email" id="auth-email" class="login-input" placeholder="Email Address">
+                        <input type="password" id="auth-password" class="login-input" placeholder="Password">
+                    </div>
+
+                    <button onclick="window.app.handleEmailAuth()" class="primary-btn full-width" id="auth-btn" style="margin-bottom: 15px;">
+                        Login
+                    </button>
+
+                    <p class="toggle-text">
+                        <span id="auth-toggle-msg">Don't have an account?</span> 
+                        <span onclick="window.app.toggleAuthMode()" class="toggle-link">Sign Up</span>
+                    </p>
+
+                    <div class="divider"><span>OR</span></div>
+
+                    <button onclick="window.app.handleGoogleLogin()" class="google-btn">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="google-icon" alt="G" style="width:20px;">
+                        Sign in with Google
+                    </button>
+    
+                    <div id="login-error" class="hidden error-msg"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading-view" class="view">
+        <div class="loading-content">
+            <i class="fa-solid fa-utensils fa-spin fa-3x"></i>
+            <p style="margin-top: 15px; font-weight: 600;">Connecting...</p>
+        </div>
+    </div>
+
+    <div id="main-app" class="view hidden">
+        <nav class="navbar">
+            <div class="nav-content">
+                <div class="logo" onclick="window.app.navigateToHome()">
+                    <div class="logo-icon"><i class="fa-solid fa-utensils"></i></div>
+                    <div>
+                        <h1>Jirone</h1>
+                        <p>ADTU CANTEEN</p>
+                    </div>
+                </div>
+                <div id="nav-controls">
+                    <span id="student-controls">
+                        <button onclick="window.app.showView('cart-view')" class="icon-btn">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                            <span id="cart-count" class="badge hidden">0</span>
+                        </button>
+                        <button onclick="window.app.showView('orders-view')" class="icon-btn">
+                            <i class="fa-regular fa-user"></i>
+                        </button>
+                    </span>
+                    <button onclick="window.app.logout()" class="icon-btn logout-icon">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container">
+            <div id="student-home-view" class="sub-view hidden">
+                <div class="banner-container">
+                    <img src="assets/canteen-bg.png" alt="ADTU Canteen View" class="banner-img">
+                    <div class="banner-overlay">
+                        <h2>Welcome to Jirone</h2>
+                        <p>Fresh food, right at your block.</p>
+                    </div>
+                </div>
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search for food..." oninput="window.app.handleSearch(this.value)">
+                </div>
+
+                <div class="section">
+                    <h3>Eat at your Block</h3>
+                    <div class="block-scroll" id="block-list"></div>
+                </div>
+
+                <div class="filters">
+                    <button onclick="window.app.setFilter('All')" class="filter-btn active" id="btn-all">All</button>
+
+                    <button onclick="window.app.setFilter('Veg')" class="filter-btn" id="btn-veg">
+                        <i class="fa-solid fa-leaf" style="color:green;"></i> Veg
+                    </button>
+
+                    <button onclick="window.app.setFilter('Non-Veg')" class="filter-btn" id="btn-nonveg">
+                        <i class="fa-solid fa-drumstick-bite" style="color:red;"></i> Non-Ve
+                    </button>
+                </div>
+
+                <h3 class="section-title">Order Online</h3>
+                <div id="menu-grid" class="z-grid"></div>
+                
+                <div id="empty-menu-msg" class="empty-state hidden">
+                    <i class="fa-solid fa-utensils fa-2x"></i>
+                    <p>No food available in this block right now.</p>
+                </div>
+            </div>
+
+            <div id="cart-view" class="sub-view hidden">
+                <div class="card cart-container">
+                    <div class="card-header">Your Cart</div>
+                    
+                    <div id="table-warning" class="warning-box hidden">
+                        <div class="warning-content">
+                            <div class="warning-title">
+                                <i class="fa-solid fa-circle-exclamation"></i> Select Table Number
+                            </div>
+                            <div class="scanner-controls">
+                                <button onclick="window.app.startScanner()" class="scan-btn">
+                                    <i class="fa-solid fa-qrcode"></i> Scan QR
+                                </button>
+                                <div class="manual-select">
+                                    <select id="manual-table-select">
+                                        <option value="" disabled selected>Table #</option>
+                                        <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option>
+                                    </select>
+                                    <button onclick="window.app.setManualTable()" class="set-btn">Set</button>
+                                </div>
+                            </div>
+                            <div id="reader"></div>
+                        </div>
+                    </div>
+
+                    <div class="contact-box">
+                        <label class="contact-label"><i class="fa-solid fa-phone"></i> Contact Verification (Required)</label>
+                        <input type="tel" id="customer-phone" class="contact-input" placeholder="Enter 10-digit Phone Number" maxlength="10" pattern="[0-9]{10}">
+                    </div>
+
+                    <div id="cart-items-container" class="cart-list"></div>
+                    
+                    <div class="cart-footer">
+                        <div class="total-row"><span>To Pay</span><span id="cart-total">₹0</span></div>
+                        <button onclick="window.app.placeOrder()" class="primary-btn">Proceed to Pay</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="orders-view" class="sub-view hidden">
+                <h2 class="page-title">Past Orders</h2>
+                <div id="orders-list"></div>
+            </div>
+
+            <div id="admin-dashboard-view" class="sub-view hidden">
+                <div class="admin-header">
+                    <div class="admin-brand">Jirone Admin</div>
+                    <div class="admin-tabs">
+                        <button onclick="window.app.switchAdminTab('orders')" class="active">Orders</button>
+                        <button onclick="window.app.switchAdminTab('stock')">Menu</button>
+                    </div>
+                </div>
+                
+                <div id="admin-orders-panel" class="admin-panel">
+                    <div id="admin-orders-list"></div>
+                </div>
+
+                <div id="admin-stock-panel" class="admin-panel hidden">
+                    <div class="add-form">
+                        <h4>Add Item to Menu</h4>
+                        
+                        <div class="form-row">
+                            <input type="text" id="new-item-name" placeholder="Item Name (e.g. Chicken Roll)">
+                            <input type="number" id="new-item-price" placeholder="Price (₹)">
+                        </div>
+
+                        <div class="form-row">
+                            <select id="new-item-category">
+                                <option value="" disabled selected>Select Category</option>
+                                <option value="Snacks">Snacks</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Drinks">Drinks</option>
+                                <option value="Chinese">Chinese</option>
+                            </select>
+
+                            <select id="new-item-type">
+                                <option value="" disabled selected>Select Type</option>
+                                <option value="Veg">🟢 Veg</option>
+                                <option value="Non-Veg">🔴 Non-Veg</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="multi-select-box">
+                                <span class="multi-select-label">Available In:</span>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-item"><input type="checkbox" class="block-check" value="A"> A</label>
+                                    <label class="checkbox-item"><input type="checkbox" class="block-check" value="B"> B</label>
+                                    <label class="checkbox-item"><input type="checkbox" class="block-check" value="J"> J</label>
+                                    <label class="checkbox-item"><input type="checkbox" class="block-check" value="K"> K</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="file-row" style="width:100%;">
+                                <input type="file" id="new-item-image" accept="image/*">
+                                <span style="font-size:0.8rem; color:#888;">(Max 10MB)</span>
+                            </div>
+                        </div>
+                    
+                        <button onclick="window.app.addMenuItem()" class="add-btn-full">Add Item to Menu</button>
+                    </div>
+                    <div id="admin-menu-list"></div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="z-footer">
+            <div class="footer-content">
+        
+                <div class="footer-top">
+                    <div class="footer-brand">
+                        <h2>Jirone</h2>
+                    </div>
+                    <div class="footer-lang">
+                        <button>🇮🇳 India</button>
+                        <button>🌐 English</button>
+                    </div>
+                </div>
+
+                <div class="footer-grid">
+                    <div class="footer-col">
+                        <h4>ABOUT JIRONE</h4>
+                        <a href="#">Who We Are</a>
+                        <a href="#">Blog</a>
+                        <a href="#">Work With Us</a>
+                        <a href="#">Investor Relations</a>
+                        <a href="#">Report Fraud</a>
+                        <a href="#">Contact Us</a>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>ADTU</h4>
+                        <a href="#">Jirone</a>
+                        <a href="#">ADTU Canteen</a>
+                        <a href="#">About ADTU</a>
+                        <a href="#">ADTU Events</a>
+                        <a href="#">ADTU Blog</a>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>FOR STUDENTS</h4>
+                        <a href="#">Code of Conduct</a>
+                        <a href="#">Community</a>
+                        <a href="#">Blogger Help</a>
+                        <a href="#">Mobile Apps</a>
+                    </div>
+
+                    <div class="footer-col">
+                        <h4>LEARN MORE</h4>
+                        <a href="#">Privacy</a>
+                        <a href="#">Security</a>
+                        <a href="#">Terms</a>
+                        <a href="#">Sitemap</a>
+
+                        <div class="social-links">
+                            <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+                            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                            <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                            <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                        </div>
+
+                        <div class="app-buttons">
+                            <img src="https://b.zmtcdn.com/data/webuikit/23e930757c3df49840c482a8638bf5c31556001144.png" alt="Play Store">
+                            <img src="https://b.zmtcdn.com/data/webuikit/9f0c85a5e33adb783fa0aef667075f9e1556003622.png" alt="App Store">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <hr>
+                    <p>
+                        By continuing past this page, you agree to our Terms of Service, Cookie Policy, Privacy Policy and Content Policies. 
+                        All trademarks are properties of their respective owners. 2024-2025 © Jirone™ Ltd. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
