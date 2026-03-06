@@ -46,7 +46,7 @@ The application utilizes a Dual-Role Permission System. Administrative access is
 Clone the Repository:
 
 Bash
-git clone https://github.com/raj-dey/Jirone - Smart Canteen Management System.git
+git clone https://github.com/raj-dey/Jirone---Smart-Canteen-Management-System.git
 Configure Firebase:
 Update the firebase-config.js file with your project's specific API Key, Auth Domain, and Project ID.
 
