@@ -4,6 +4,8 @@ Jirone is a specialized web-based canteen management application designed for As
 
 ## 📸 Project Preview
 
+👉  https://raj-dey.github.io/Jirone---Smart-Canteen-Management-System/
+
 
 ## Core Features
 ### For Students
