@@ -3,9 +3,9 @@
 Jirone is a specialized web-based canteen management application designed for Assam Down Town University (ADTU). It streamlines the dining experience for students while providing a robust, real-time administrative dashboard for canteen staff to manage orders and menu availability.
 
 ## 📸 Project Preview
-<img src="./main/Documentations/ss1.jpg" alt="App Preview" width="500">
-![image alt](https://github.com/raj-dey/Jirone---Smart-Canteen-Management-System
-/blob/main/Documentations/ss2.jpeg?raw=true)
+<img width="1470" height="832" alt="ss1" src="https://github.com/user-att<img width="1470" height="832" alt="ss2" src="https://github.com/user-attachments/assets/30440409-ac86-4e45-8942-a112d8699357" />
+achments/assets/c09cacfd-a602-43a7-91fe-60063587721f" />
+
 
 👉  https://raj-dey.github.io/Jirone---Smart-Canteen-Management-System/
 
