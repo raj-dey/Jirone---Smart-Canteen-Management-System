@@ -592,19 +592,19 @@ const App = {
         checkboxes.forEach(cb => cb.checked = false);
     },
 
-    markReady: async (id, phone) => { 
-        await updateDoc(doc(db, "orders", id), { status: "Ready" }); 
-        App.toast("Marked Ready & SMS Sent"); 
+    markReady: async (id, phone) => {
+        await updateDoc(doc(db, "orders", id), { status: "Ready" });
+        App.toast("Marked Ready & SMS Sent");
     },
 
     toggleStock: async (id, s) => { await updateDoc(doc(db, "menu", id), { isAvailable: !s }); },
 
-    toast: (msg, type="info") => { 
-        const el = document.getElementById('toast'); 
-        el.innerText = msg; 
-        el.style.background = type==='error' ? '#ef4444' : '#333'; 
-        el.classList.remove('hidden'); 
-        setTimeout(()=>el.classList.add('hidden'), 3000); 
+    toast: (msg, type="info") => {
+        const el = document.getElementById('toast');
+        el.innerText = msg;
+        el.style.background = type==='error' ? '#ef4444' : '#333';
+        el.classList.remove('hidden');
+        setTimeout(()=>el.classList.add('hidden'), 3000);
     }
 };
 
