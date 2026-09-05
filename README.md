@@ -2,7 +2,7 @@
 
 > A modern, web-based canteen ordering and kitchen management system built for **Assam Down Town University (ADTU)** to eliminate long queues and streamline campus dining.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen?style=flat-square&logo=githubpages&logoColor=white)](https://raj-dey.github.io/Jirone---Smart-Canteen-Management-System/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-brightgreen?style=flat-square&logo=githubpages&logoColor=white)](raj-dey.github.io/Jirone---Smart-Canteen-Management-System/)
 [![Firebase](https://img.shields.io/badge/Firebase-11.0.1-FFCA28?style=flat-square&logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![Cloud Firestore](https://img.shields.io/badge/Cloud%20Firestore-Realtime%20DB-FFA000?style=flat-square&logo=firebase&logoColor=white)](https://firebase.google.com/docs/firestore)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/)
