@@ -11,6 +11,7 @@ import {
     addDoc,
     collection,
     doc,
+    getDoc,
     onSnapshot,
     serverTimestamp,
     updateDoc
@@ -131,12 +132,13 @@ const App = {
                 result = await createUserWithEmailAndPassword(auth, email, password);
             }
 
-            // Set User State
+            // Dynamically determine user role
+            const role = await App.checkUserRole(result.user.email);
+
             state.user = {
                 email: result.user.email,
-                // Simple logic: If email contains 'admin', set role to admin
-                role: result.user.email === 'rajdey.btcs@adtu.in' ? 'admin' : 'student',
-                name: result.user.email.split('@')[0]
+                role: role,
+                name: result.user.displayName || result.user.email.split('@')[0]
             };
             
             localStorage.setItem('jirone_user', JSON.stringify(state.user));
@@ -155,11 +157,39 @@ const App = {
         }
     },
 
+    // Check if user has admin privileges via 'admin' keyword or Firestore 'admins' collection
+    checkUserRole: async (email) => {
+        if (!email) return 'student';
+        const cleanEmail = email.toLowerCase().trim();
+
+        // 1. Any email containing the word 'admin' (e.g. admin@adtu.in, canteenadmin@...)
+        if (cleanEmail.includes('admin')) {
+            return 'admin';
+        }
+
+        // 2. Dynamic check via Firebase Firestore 'admins' collection
+        try {
+            const adminDoc = await getDoc(doc(db, "admins", cleanEmail));
+            if (adminDoc.exists()) {
+                return 'admin';
+            }
+        } catch (err) {
+            console.warn("Firestore admin check fallback:", err);
+        }
+
+        return 'student';
+    },
+
     handleGoogleLogin: async () => {
         const p = new GoogleAuthProvider();
         try { 
             const r = await signInWithPopup(auth, p); 
-            state.user={email:r.user.email, role:r.user.email.includes('admin')?'admin':'student', name:r.user.displayName}; 
+            const role = await App.checkUserRole(r.user.email);
+            state.user = {
+                email: r.user.email, 
+                role: role, 
+                name: r.user.displayName || r.user.email.split('@')[0]
+            }; 
             localStorage.setItem('jirone_user', JSON.stringify(state.user)); 
             App.loadApp(); 
         } catch(e){ 
