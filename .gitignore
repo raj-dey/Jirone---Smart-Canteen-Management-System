@@ -26,4 +26,5 @@ yarn-error.log*
 .env.production.local
 *.pem
 *.key
+firebase-config.js
 
