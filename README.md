@@ -7,7 +7,7 @@
 [![Cloud Firestore](https://img.shields.io/badge/Cloud%20Firestore-Realtime%20DB-FFA000?style=flat-square&logo=firebase&logoColor=white)](https://firebase.google.com/docs/firestore)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/)
 
-👉 **Live Demo:** [https://raj-dey.github.io/Jirone---Smart-Canteen-Management-System/](raj-dey.github.io/Jirone---Smart-Canteen-Management-System/)
+👉 **Live Demo:** [https://raj-dey.github.io/Jirone---Smart-Canteen-Management-System/](https://raj-dey.github.io/Jirone---Smart-Canteen-Management-System/)
 
 ---
 
