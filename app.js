@@ -10,6 +10,7 @@ import {
 import {
     addDoc,
     collection,
+    deleteDoc,
     doc,
     getDoc,
     onSnapshot,
@@ -421,21 +422,28 @@ const App = {
     },
 
     renderAdminMenu: () => {
-        document.getElementById('admin-menu-list').innerHTML = state.menu.map(i=>`
+        document.getElementById('admin-menu-list').innerHTML = state.menu.map(i => {
+            const safeName = (i.name || '').replace(/'/g, "\\'");
+            return `
             <div class="admin-item">
                 <div style="display:flex; gap:10px; align-items:center;">
-                    <img src="${i.image}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;">
+                    <img src="${i.image}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;" onerror="this.src='https://placehold.co/100x100?text=Food'">
                     <div><b>${i.name}</b><br>
                             <small>
                                 ${Array.isArray(i.block) ? i.block.join(', ') : (i.block || 'All')} Block - ₹${i.price}
                             </small>
                     </div>
                 </div>
-                <button onclick="window.app.toggleStock('${i.id}', ${i.isAvailable})" class="btn" style="font-size:0.7rem; padding:5px; background:${i.isAvailable?'#dcfce7':'#fee2e2'}; color:${i.isAvailable?'#166534':'#991b1b'}; border-radius:4px;">
-                    ${i.isAvailable?'STOCK':'OUT'}
-                </button>
-            </div>
-        `).join('');
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button onclick="window.app.toggleStock('${i.id}', ${i.isAvailable})" class="btn" style="font-size:0.7rem; padding:6px 10px; background:${i.isAvailable?'#dcfce7':'#fee2e2'}; color:${i.isAvailable?'#166534':'#991b1b'}; border-radius:4px; font-weight:600; cursor:pointer;">
+                        ${i.isAvailable?'STOCK':'OUT'}
+                    </button>
+                    <button onclick="window.app.deleteMenuItem('${i.id}', '${safeName}')" class="btn" style="font-size:0.8rem; padding:6px 9px; background:#fef2f2; color:#ef4444; border:1px solid #fecaca; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Delete Item">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>`;
+        }).join('') || '<p style="text-align:center; padding:20px; color:#888;">No menu items found.</p>';
     },
 
     startScanner: () => {
@@ -628,6 +636,19 @@ const App = {
     },
 
     toggleStock: async (id, s) => { await updateDoc(doc(db, "menu", id), { isAvailable: !s }); },
+
+    deleteMenuItem: async (id, name) => {
+        if (!confirm(`Are you sure you want to permanently delete "${name}" from the canteen menu and database?`)) {
+            return;
+        }
+        try {
+            await deleteDoc(doc(db, "menu", id));
+            App.toast(`"${name}" deleted successfully`);
+        } catch (error) {
+            console.error("Failed to delete menu item:", error);
+            App.toast("Delete failed: " + error.message, "error");
+        }
+    },
 
     toast: (msg, type="info") => {
         const el = document.getElementById('toast');
